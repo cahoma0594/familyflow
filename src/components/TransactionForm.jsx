@@ -47,7 +47,7 @@ export default function TransactionForm({ initial, categories, familyId, userId,
       })
 
       
-      const response = await fetch('/api/ocr', {
+      const response = await fetch('/.netlify/functions/ocr', {
         method: 'POST',
     	headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
