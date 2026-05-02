@@ -61,7 +61,7 @@ export default function App() {
       supabase.from('categories').select('*')
         .or(`family_id.is.null,family_id.eq.${familyId}`)
         .order('sort_order'),
-      supabase.from('family_members').select('*, profiles(display_name, avatar_color)')
+      supabase.from('family_members').select('*, profiles!family_members_user_id_fkey(display_name, avatar_color)')
         .eq('family_id', familyId),
       supabase.from('transactions').select('*, categories(name,icon,color,type)')
         .eq('family_id', familyId)
