@@ -85,13 +85,6 @@ export default function App() {
       setLoading(false)
     }
   }, [familyId, activeMonth])
-  
-    setCategories(cats || [])
-    setMembers(mems || [])
-    setTransactions(txs || [])
-    setBudgets(bdgs || [])
-  }, [familyId, activeMonth])
-
   useEffect(() => { loadData() }, [loadData])
 
   // ── Real-time subscription ────────────────────────────────────────────────
