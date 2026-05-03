@@ -57,21 +57,35 @@ export default function App() {
   // ── Data ──────────────────────────────────────────────────────────────────
   const loadData = useCallback(async () => {
     if (!familyId) return
-    const [{ data: cats }, { data: mems }, { data: txs }, { data: bdgs }] = await Promise.all([
-      supabase.from('categories').select('*')
-        .or(`family_id.is.null,family_id.eq.${familyId}`)
-        .order('sort_order'),
-      supabase.from('family_members').select('*, profiles(display_name, avatar_color)')
-        .eq('family_id', familyId),
-      supabase.from('transactions').select('*, categories(name,icon,color,type)')
-        .eq('family_id', familyId)
-        .gte('date', activeMonth + '-01')
-        .lte('date', activeMonth + '-31')
-        .order('date', { ascending: false }),
-      supabase.from('budgets').select('*')
-        .eq('family_id', familyId)
-        .eq('month', activeMonth),
-    ])
+    setLoading(true)
+    try {
+      const [{ data: cats }, { data: mems }, { data: txs }, { data: bdgs }] = await Promise.all([
+        supabase.from('categories').select('*')
+          .or(`family_id.is.null,family_id.eq.${familyId}`)
+          .order('sort_order'),
+        supabase.from('family_members').select('*, profiles(display_name, avatar_color)')
+          .eq('family_id', familyId),
+        supabase.from('transactions').select('*, categories(name,icon,color,type)')
+          .eq('family_id', familyId)
+          .gte('date', activeMonth + '-01')
+          .lte('date', activeMonth + '-31')
+          .order('date', { ascending: false }),
+        supabase.from('budgets').select('*')
+          .eq('family_id', familyId)
+          .eq('month', activeMonth),
+      ])
+      setCategories(cats || [])
+      setMembers(mems || [])
+      setTransactions(txs || [])
+      setBudgets(bdgs || [])
+    } catch (err) {
+      console.error('Error cargando datos:', err)
+      notify('Error de conexión. Comprueba tu red e inténtalo de nuevo.', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }, [familyId, activeMonth])
+  
     setCategories(cats || [])
     setMembers(mems || [])
     setTransactions(txs || [])
@@ -86,6 +100,7 @@ export default function App() {
     const channel = supabase.channel('family-' + familyId)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions', filter: `family_id=eq.${familyId}` }, loadData)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'budgets', filter: `family_id=eq.${familyId}` }, loadData)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'categories', filter: `family_id=eq.${familyId}` }, loadData)
       .subscribe()
     return () => supabase.removeChannel(channel)
   }, [familyId, loadData])
