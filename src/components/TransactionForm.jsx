@@ -15,6 +15,7 @@ export default function TransactionForm({ initial, categories, familyId, userId,
     user_id: initial?.user_id || userId,
     has_receipt: initial?.has_receipt || false,
     notes: initial?.notes || '',
+    is_recurring: initial?.is_recurring || false,
     id: initial?.id || null,
   })
   const [scanning, setScanning]   = useState(false)
@@ -130,6 +131,7 @@ export default function TransactionForm({ initial, categories, familyId, userId,
         date: form.date,
         has_receipt: form.has_receipt,
         notes: form.notes || null,
+        is_recurring: form.is_recurring,
       }
 
       let err
@@ -229,6 +231,16 @@ export default function TransactionForm({ initial, categories, familyId, userId,
                 </div>
               )}
             </div>
+
+            <div style={s.recurringRow} onClick={()=>set('is_recurring',!form.is_recurring)}>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:600, fontSize:13, color:'#333'}}>🔁 Recurrente mensual</div>
+                <div style={{fontSize:11, color:'#888', marginTop:2}}>Se añadirá automáticamente cada mes</div>
+              </div>
+              <div style={{...s.toggle,...(form.is_recurring?s.toggleOn:{})}}>
+                <div style={{...s.toggleKnob,...(form.is_recurring?s.toggleKnobOn:{})}}/>
+              </div>
+            </div>
           </div>
         )}
 
@@ -286,6 +298,14 @@ const s = {
   catChip: { padding:'7px 12px', borderRadius:20, border:'1.5px solid #eee', background:'white',
     cursor:'pointer', fontSize:12, fontWeight:500, color:'#555', transition:'all 0.15s' },
   row2: { display:'flex', gap:12 },
+  recurringRow: { display:'flex', alignItems:'center', gap:12, padding:'14px 0 4px',
+    borderTop:'1px solid #f0f0f0', marginTop:8, cursor:'pointer' },
+  toggle: { width:44, height:26, borderRadius:13, background:'#ddd', position:'relative',
+    transition:'background 0.2s', flexShrink:0 },
+  toggleOn: { background:'#2D6A4F' },
+  toggleKnob: { position:'absolute', top:3, left:3, width:20, height:20, borderRadius:10,
+    background:'white', boxShadow:'0 1px 3px rgba(0,0,0,0.2)', transition:'left 0.2s' },
+  toggleKnobOn: { left:21 },
   submitBtn: { width:'100%', padding:15, background:'#1A1A1A', color:'white', border:'none',
     borderRadius:14, cursor:'pointer', fontSize:15, fontWeight:600,
     display:'flex', alignItems:'center', justifyContent:'center', gap:8 },

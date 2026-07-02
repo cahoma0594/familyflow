@@ -87,6 +87,64 @@ export default function App() {
   }, [familyId, activeMonth])
   useEffect(() => { loadData() }, [loadData])
 
+  // ── Recurring transactions: auto-apply on new month ──────────────────────
+  useEffect(() => {
+    if (!familyId || loading) return
+    const current = monthKey(new Date())
+    if (activeMonth !== current) return
+
+    const cacheKey = `ff_rec_${familyId}_${current}`
+    if (localStorage.getItem(cacheKey)) return
+
+    ;(async () => {
+      const { data: recurring } = await supabase
+        .from('transactions').select('*')
+        .eq('family_id', familyId).eq('is_recurring', true)
+        .lt('date', current + '-01')
+        .order('date', { ascending: false })
+
+      if (!recurring?.length) { localStorage.setItem(cacheKey, '1'); return }
+
+      // De-duplicate: most recent per (category_id + description + amount)
+      const seen = new Set()
+      const templates = []
+      for (const tx of recurring) {
+        const k = `${tx.category_id}_${tx.description}_${tx.amount}`
+        if (!seen.has(k)) { seen.add(k); templates.push(tx) }
+      }
+
+      // Skip already-existing recurring in current month
+      const { data: existing } = await supabase
+        .from('transactions').select('category_id,description,amount')
+        .eq('family_id', familyId).eq('is_recurring', true)
+        .gte('date', current + '-01').lte('date', current + '-31')
+
+      const existingKeys = new Set((existing || []).map(t => `${t.category_id}_${t.description}_${t.amount}`))
+
+      const now = new Date()
+      const toInsert = templates
+        .filter(t => !existingKeys.has(`${t.category_id}_${t.description}_${t.amount}`))
+        .map(t => {
+          const originalDay = parseInt(t.date.split('-')[2])
+          const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+          const day = String(Math.min(originalDay, daysInMonth)).padStart(2, '0')
+          return {
+            family_id: familyId, user_id: t.user_id, type: t.type,
+            amount: t.amount, category_id: t.category_id,
+            description: t.description, date: `${current}-${day}`,
+            is_recurring: true, notes: t.notes, has_receipt: false,
+          }
+        })
+
+      if (toInsert.length > 0) {
+        await supabase.from('transactions').insert(toInsert)
+        const n = toInsert.length
+        notify(`🔁 ${n} gasto${n>1?'s':''} recurrente${n>1?'s':''} añadido${n>1?'s':''}`)
+      }
+      localStorage.setItem(cacheKey, '1')
+    })()
+  }, [familyId, loading, activeMonth])
+
   // ── Real-time subscription ────────────────────────────────────────────────
   useEffect(() => {
     if (!familyId) return

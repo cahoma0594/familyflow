@@ -54,6 +54,7 @@ create table if not exists public.transactions (
   date date not null default current_date,
   has_receipt boolean default false,
   notes text,
+  is_recurring boolean default false,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
