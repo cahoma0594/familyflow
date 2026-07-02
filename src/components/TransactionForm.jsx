@@ -158,7 +158,7 @@ export default function TransactionForm({ initial, categories, familyId, userId,
 
         {/* Type */}
         <div style={s.typeRow}>
-          {[['expense','Gasto','#E07A5F'],['income','Ingreso','#2D6A4F']].map(([v,l,c])=>(
+          {[['expense','Gasto','#E07A5F'],['income','Ingreso','#1B4332']].map(([v,l,c])=>(
             <button key={v} style={{...s.typeBtn,...(form.type===v?{background:c,color:'#fff',borderColor:c}:{})}}
               onClick={()=>switchType(v)}>{l}</button>
           ))}
@@ -275,25 +275,25 @@ const s = {
   typeBtn: { flex:1, padding:'10px', borderRadius:12, border:'1.5px solid #eee',
     background:'white', cursor:'pointer', fontWeight:600, fontSize:14, color:'#666',
     transition:'all 0.15s' },
-  receiptZone: { border:'1.5px dashed #ddd', borderRadius:14, padding:14, marginBottom:16,
-    cursor:'pointer', background:'#FAFAF8', transition:'all 0.2s' },
+  receiptZone: { border:'1.5px dashed #D1D5DB', borderRadius:12, padding:14, marginBottom:16,
+    cursor:'pointer', background:'#F9FAFB', transition:'all 0.2s' },
   receiptDone: { borderColor:'#52B788', background:'#F0F7F4' },
   scanRow: { display:'flex', alignItems:'center', gap:12 },
   scanTitle: { fontSize:13, fontWeight:600, color:'#333' },
   scanSub: { fontSize:11, color:'#888', marginTop:2 },
   confBadge: { marginLeft:'auto', fontSize:10, fontWeight:700, padding:'3px 8px',
-    borderRadius:20, color:'#2D6A4F' },
-  spinner: { width:16, height:16, border:'2px solid #ddd', borderTopColor:'#2D6A4F',
+    borderRadius:20, color:'#1B4332' },
+  spinner: { width:16, height:16, border:'2px solid #ddd', borderTopColor:'#1B4332',
     borderRadius:'50%', animation:'spin 0.7s linear infinite', display:'inline-block' },
   formTabs: { display:'flex', gap:4, marginBottom:16 },
   fTab: { padding:'6px 16px', border:'1px solid #eee', borderRadius:20, background:'white',
     cursor:'pointer', fontSize:12, fontWeight:500, color:'#888' },
-  fTabA: { background:'#1A1A1A', color:'white', borderColor:'#1A1A1A' },
+  fTabA: { background:'#111827', color:'white', borderColor:'#111827' },
   fields: { display:'flex', flexDirection:'column', gap:4, marginBottom:20 },
   label: { fontSize:11, fontWeight:700, color:'#aaa', textTransform:'uppercase',
     letterSpacing:'0.5px', marginTop:12, marginBottom:6 },
-  input: { width:'100%', padding:'11px 14px', border:'1.5px solid #eee', borderRadius:12,
-    fontSize:14, outline:'none', background:'#FAFAF8', boxSizing:'border-box' },
+  input: { width:'100%', padding:'11px 14px', border:'1.5px solid #E5E7EB', borderRadius:12,
+    fontSize:14, outline:'none', background:'#F9FAFB', boxSizing:'border-box' },
   catGrid: { display:'flex', flexWrap:'wrap', gap:6 },
   catChip: { padding:'7px 12px', borderRadius:20, border:'1.5px solid #eee', background:'white',
     cursor:'pointer', fontSize:12, fontWeight:500, color:'#555', transition:'all 0.15s' },
@@ -302,11 +302,11 @@ const s = {
     borderTop:'1px solid #f0f0f0', marginTop:8, cursor:'pointer' },
   toggle: { width:44, height:26, borderRadius:13, background:'#ddd', position:'relative',
     transition:'background 0.2s', flexShrink:0 },
-  toggleOn: { background:'#2D6A4F' },
+  toggleOn: { background:'#1B4332' },
   toggleKnob: { position:'absolute', top:3, left:3, width:20, height:20, borderRadius:10,
     background:'white', boxShadow:'0 1px 3px rgba(0,0,0,0.2)', transition:'left 0.2s' },
   toggleKnobOn: { left:21 },
-  submitBtn: { width:'100%', padding:15, background:'#1A1A1A', color:'white', border:'none',
+  submitBtn: { width:'100%', padding:15, background:'#111827', color:'white', border:'none',
     borderRadius:14, cursor:'pointer', fontSize:15, fontWeight:600,
     display:'flex', alignItems:'center', justifyContent:'center', gap:8 },
 }

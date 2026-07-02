@@ -40,7 +40,7 @@ export default function Transactions({ transactions, categories, onEdit, onDelet
 
       {/* Summary */}
       <div style={s.summary}>
-        <span style={{color:'#2D6A4F',fontWeight:600}}>↑ {fmt(filtered.filter(t=>t.type==='income').reduce((a,t)=>a+ +t.amount,0))}</span>
+        <span style={{color:'#1B4332',fontWeight:600}}>↑ {fmt(filtered.filter(t=>t.type==='income').reduce((a,t)=>a+ +t.amount,0))}</span>
         <span style={{color:'#aaa',fontSize:12}}>  ·  </span>
         <span style={{color:'#E07A5F',fontWeight:600}}>↓ {fmt(filtered.filter(t=>t.type==='expense').reduce((a,t)=>a+ +t.amount,0))}</span>
         <span style={{color:'#aaa',fontSize:12, marginLeft:'auto'}}>{filtered.length} movimientos</span>
@@ -75,7 +75,7 @@ function TxCard({ tx, members, onEdit, onDelete }) {
             {tx.has_receipt && ' · 📎'}
           </div>
         </div>
-        <div style={{...s.amount,color:tx.type==='income'?'#2D6A4F':'#E07A5F'}}>
+        <div style={{...s.amount,color:tx.type==='income'?'#1B4332':'#E07A5F'}}>
           {tx.type==='income'?'+':'−'}{fmt(tx.amount)}
         </div>
       </div>
@@ -100,22 +100,22 @@ const s = {
   filterRow: { display:'flex', gap:6, flexWrap:'wrap' },
   fBtn: { padding:'6px 14px', borderRadius:20, border:'1px solid #eee', background:'white',
     cursor:'pointer', fontSize:12, fontWeight:500, color:'#666' },
-  fBtnA: { background:'#1A1A1A', color:'white', borderColor:'#1A1A1A' },
+  fBtnA: { background:'#111827', color:'white', borderColor:'#111827' },
   catBtn: { padding:'5px 10px', borderRadius:20, border:'1px solid #eee', background:'white',
     cursor:'pointer', fontSize:11, color:'#666' },
   catBtnA: { color:'white' },
   summary: { display:'flex', alignItems:'center', gap:4, fontSize:13, padding:'2px 0' },
   list: { display:'flex', flexDirection:'column', gap:6 },
   empty: { textAlign:'center', color:'#ccc', padding:'50px 0', fontSize:14 },
-  card: { background:'white', borderRadius:14, overflow:'hidden',
-    boxShadow:'0 1px 6px rgba(0,0,0,0.05)' },
+  card: { background:'white', borderRadius:12, overflow:'hidden',
+    border:'1px solid #E5E7EB', boxShadow:'0 1px 2px rgba(0,0,0,0.04)' },
   cardMain: { display:'flex', alignItems:'center', gap:12, padding:'13px 16px', cursor:'pointer' },
   icon: { width:38, height:38, borderRadius:10, display:'flex', alignItems:'center',
     justifyContent:'center', fontSize:18, flexShrink:0 },
   desc: { fontSize:13, fontWeight:500, marginBottom:2 },
   meta: { fontSize:11, color:'#aaa' },
   amount: { fontSize:14, fontWeight:700, flexShrink:0 },
-  expand: { borderTop:'1px solid #F5F2EE', padding:'12px 16px', background:'#FAFAF8' },
+  expand: { borderTop:'1px solid #F3F4F6', padding:'12px 16px', background:'#F9FAFB' },
   notes: { fontSize:12, color:'#666', marginBottom:10 },
   actions: { display:'flex', gap:8 },
   editBtn: { padding:'6px 14px', border:'1px solid #eee', borderRadius:8, background:'white',

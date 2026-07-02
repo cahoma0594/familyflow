@@ -203,7 +203,7 @@ export default function App() {
       <div style={s.blob1}/><div style={s.blob2}/>
 
       {notification && (
-        <div style={{...s.toast, background: notification.type==='error'?'#E07A5F':'#2D6A4F'}}>
+        <div style={{...s.toast, background: notification.type==='error'?'#E07A5F':'#1B4332'}}>
           {notification.msg}
         </div>
       )}
@@ -278,10 +278,10 @@ export default function App() {
 
 function Loader() {
   return (
-    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#F7F5F0'}}>
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#F9FAFB'}}>
       <div style={{textAlign:'center'}}>
         <div style={{fontSize:48,marginBottom:16}}>🌿</div>
-        <div style={{width:32,height:32,border:'3px solid #ddd',borderTopColor:'#2D6A4F',
+        <div style={{width:32,height:32,border:'3px solid #ddd',borderTopColor:'#1B4332',
           borderRadius:'50%',animation:'spin 0.7s linear infinite',margin:'0 auto'}}/>
       </div>
     </div>
@@ -289,15 +289,15 @@ function Loader() {
 }
 
 const s = {
-  app: { minHeight:'100vh', background:'#F7F5F0', fontFamily:"'DM Sans',sans-serif",
-    color:'#1A1A1A', position:'relative' },
+  app: { minHeight:'100vh', background:'#F9FAFB', fontFamily:"'Inter',sans-serif",
+    color:'#111827', position:'relative' },
   blob1: { position:'fixed', top:-120, right:-120, width:400, height:400, borderRadius:'50%',
-    background:'radial-gradient(circle, rgba(45,106,79,0.07) 0%, transparent 70%)', pointerEvents:'none', zIndex:0 },
+    background:'radial-gradient(circle, rgba(27,67,50,0.06) 0%, transparent 70%)', pointerEvents:'none', zIndex:0 },
   blob2: { position:'fixed', bottom:-80, left:-80, width:350, height:350, borderRadius:'50%',
     background:'radial-gradient(circle, rgba(181,131,141,0.06) 0%, transparent 70%)', pointerEvents:'none', zIndex:0 },
   toast: { position:'fixed', top:20, right:20, zIndex:1000, padding:'12px 20px',
     borderRadius:12, color:'white', fontSize:14, fontWeight:500, boxShadow:'0 8px 24px rgba(0,0,0,0.15)' },
-  header: { position:'sticky', top:0, zIndex:100, background:'rgba(247,245,240,0.93)',
+  header: { position:'sticky', top:0, zIndex:100, background:'rgba(255,255,255,0.95)',
     backdropFilter:'blur(12px)', borderBottom:'1px solid rgba(0,0,0,0.06)' },
   headerTop: { display:'flex', alignItems:'center', justifyContent:'space-between',
     padding:'10px 16px 6px' },
@@ -316,14 +316,14 @@ const s = {
     borderBottom:'1px solid #eee', overflowX:'auto' },
   userChip: { padding:'5px 14px', borderRadius:20, border:'1px solid #ddd', background:'white',
     cursor:'pointer', fontSize:12, fontWeight:500, color:'#666', whiteSpace:'nowrap' },
-  userChipA: { background:'#1A1A1A', color:'white', borderColor:'#1A1A1A' },
+  userChipA: { background:'#111827', color:'white', borderColor:'#111827' },
   nav: { display:'flex', alignItems:'center', padding:'0 8px', background:'white',
     borderBottom:'1px solid #eee' },
   navItem: { display:'flex', alignItems:'center', gap:4, padding:'12px 10px', border:'none',
     background:'none', cursor:'pointer', fontSize:12, color:'#888', fontWeight:500,
     borderBottom:'2px solid transparent' },
-  navActive: { color:'#1A1A1A', borderBottomColor:'#2D6A4F' },
-  addBtn: { marginLeft:'auto', padding:'7px 18px', background:'#1A1A1A', color:'white',
+  navActive: { color:'#111827', borderBottomColor:'#1B4332' },
+  addBtn: { marginLeft:'auto', padding:'7px 18px', background:'#111827', color:'white',
     border:'none', borderRadius:20, cursor:'pointer', fontSize:12, fontWeight:600 },
   main: { padding:'16px 14px', maxWidth:960, margin:'0 auto', position:'relative', zIndex:1 },
 }

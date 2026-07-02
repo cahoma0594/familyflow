@@ -17,7 +17,7 @@ export default function BudgetView({ budgets, byCategory, categories, activeMont
         </div>
         <div style={s.introDivider}>/</div>
         <div style={s.introStat}>
-          <div style={{...s.introVal,color:totalSpent>totalBudgeted&&totalBudgeted>0?'#E07A5F':'#1A1A1A'}}>{fmt(totalSpent)}</div>
+          <div style={{...s.introVal,color:totalSpent>totalBudgeted&&totalBudgeted>0?'#E07A5F':'#111827'}}>{fmt(totalSpent)}</div>
           <div style={s.introLabel}>Gastado</div>
         </div>
       </div>
@@ -68,7 +68,7 @@ function BudgetCard({ cat, budget, spent, familyId, activeMonth, onRefresh }) {
         <span style={s.catName}>{cat.name}</span>
       </div>
 
-      <div style={{...s.spent,color:over?'#E07A5F':'#1A1A1A'}}>{fmt(spent)}</div>
+      <div style={{...s.spent,color:over?'#E07A5F':'#111827'}}>{fmt(spent)}</div>
       <div style={s.spentLabel}>gastado</div>
 
       {limit > 0 && (
@@ -105,25 +105,25 @@ function BudgetCard({ cat, budget, spent, familyId, activeMonth, onRefresh }) {
 
 const s = {
   page: { display:'flex', flexDirection:'column', gap:20 },
-  intro: { background:'white', borderRadius:16, padding:'20px 24px',
-    display:'flex', alignItems:'center', gap:20, boxShadow:'0 2px 12px rgba(0,0,0,0.05)' },
+  intro: { background:'white', borderRadius:12, padding:'20px 24px',
+    display:'flex', alignItems:'center', gap:20, border:'1px solid #E5E7EB', boxShadow:'0 1px 2px rgba(0,0,0,0.04)' },
   introStat: { flex:1, textAlign:'center' },
   introVal: { fontFamily:"'Fraunces',serif", fontSize:28, fontWeight:700, letterSpacing:'-1px' },
   introLabel: { fontSize:11, color:'#aaa', textTransform:'uppercase', letterSpacing:'0.5px', marginTop:4 },
   introDivider: { fontSize:28, color:'#ddd', fontWeight:300 },
   grid: { display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(160px, 1fr))', gap:12 },
-  card: { background:'white', borderRadius:14, padding:16, boxShadow:'0 2px 10px rgba(0,0,0,0.05)' },
+  card: { background:'white', borderRadius:12, padding:16, border:'1px solid #E5E7EB', boxShadow:'0 1px 2px rgba(0,0,0,0.04)' },
   catHead: { display:'flex', alignItems:'center', gap:8, marginBottom:12 },
   catName: { fontSize:13, fontWeight:600 },
   spent: { fontSize:20, fontWeight:700, letterSpacing:'-0.5px' },
   spentLabel: { fontSize:11, color:'#aaa', marginBottom:10 },
-  barBg: { height:5, background:'#F0EDE8', borderRadius:4, overflow:'hidden', marginBottom:6 },
+  barBg: { height:5, background:'#E5E7EB', borderRadius:4, overflow:'hidden', marginBottom:6 },
   barFill: { height:'100%', borderRadius:4, transition:'width 0.4s ease' },
   pctLabel: { fontSize:11, marginBottom:10 },
   editRow: { display:'flex', gap:4, marginTop:8 },
   editInput: { flex:1, padding:'7px 10px', border:'1.5px solid #eee', borderRadius:8,
     fontSize:13, outline:'none' },
-  saveBtn: { padding:'7px 10px', background:'#2D6A4F', color:'white', border:'none',
+  saveBtn: { padding:'7px 10px', background:'#1B4332', color:'white', border:'none',
     borderRadius:8, cursor:'pointer', fontWeight:700 },
   cancelBtn: { padding:'7px 10px', background:'#f5f5f5', color:'#666', border:'none',
     borderRadius:8, cursor:'pointer' },

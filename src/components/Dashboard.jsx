@@ -12,7 +12,7 @@ function fmtShort(n) {
 }
 
 const CHART_COLORS = [
-  '#2D6A4F','#52B788','#E07A5F','#F2CC8F','#81B29A',
+  '#1B4332','#52B788','#E07A5F','#F2CC8F','#81B29A',
   '#F4A261','#457B9D','#A8DADC','#E9C46A','#264653',
   '#B5838D','#6D6875'
 ]
@@ -53,7 +53,7 @@ function PieCenterLabel({ viewBox, total }) {
   return (
     <>
       <text x={cx} y={cy - 8} textAnchor="middle" style={{fontSize:11,fill:'#888'}}>Total gastos</text>
-      <text x={cx} y={cy + 12} textAnchor="middle" style={{fontSize:14,fontWeight:600,fill:'#1A1A1A'}}>{fmt(total)}</text>
+      <text x={cx} y={cy + 12} textAnchor="middle" style={{fontSize:14,fontWeight:600,fill:'#111827'}}>{fmt(total)}</text>
     </>
   )
 }
@@ -105,10 +105,10 @@ export default function Dashboard({ totals, byCategory, transactions, budgets, c
 
       {/* ── KPIs ── */}
       <div style={s.kpiRow}>
-        <KPI label="Ingresos" value={totals.income}  color="#2D6A4F" icon="↑" />
+        <KPI label="Ingresos" value={totals.income}  color="#1B4332" icon="↑" />
         <KPI label="Gastos"   value={totals.expense} color="#E07A5F" icon="↓" />
         <KPI label="Balance"  value={totals.balance}
-          color={totals.balance >= 0 ? '#2D6A4F' : '#E07A5F'}
+          color={totals.balance >= 0 ? '#1B4332' : '#E07A5F'}
           big icon={totals.balance >= 0 ? '✓' : '!'} />
       </div>
 
@@ -140,7 +140,7 @@ export default function Dashboard({ totals, byCategory, transactions, budgets, c
                   <span style={{fontSize:13,color:'#555'}}>
                     {fmt(Math.max(0, totals.balance))} ahorrado
                   </span>
-                  <span style={{fontSize:13,fontWeight:600,color:'#2D6A4F'}}>
+                  <span style={{fontSize:13,fontWeight:600,color:'#1B4332'}}>
                     meta {fmt(savingsGoal.target_amount)}
                   </span>
                 </div>
@@ -148,7 +148,7 @@ export default function Dashboard({ totals, byCategory, transactions, budgets, c
                   <div style={{
                     height:10, borderRadius:99, transition:'width 0.4s ease',
                     width: Math.min(100, Math.max(0, (totals.balance / savingsGoal.target_amount) * 100)) + '%',
-                    background: totals.balance >= savingsGoal.target_amount ? '#2D6A4F'
+                    background: totals.balance >= savingsGoal.target_amount ? '#1B4332'
                       : totals.balance >= savingsGoal.target_amount * 0.5 ? '#F2CC8F' : '#E07A5F'
                   }}/>
                 </div>
@@ -160,7 +160,7 @@ export default function Dashboard({ totals, byCategory, transactions, budgets, c
               </>
             ) : (
               <div style={{fontSize:13,color:'#aaa',marginTop:4}}>
-                Balance actual: <strong style={{color: totals.balance>=0?'#2D6A4F':'#E07A5F'}}>{fmt(totals.balance)}</strong>
+                Balance actual: <strong style={{color: totals.balance>=0?'#1B4332':'#E07A5F'}}>{fmt(totals.balance)}</strong>
                 <span style={{display:'block',marginTop:4,fontSize:12}}>Define una meta para ver tu progreso</span>
               </div>
             )}
@@ -236,7 +236,7 @@ export default function Dashboard({ totals, byCategory, transactions, budgets, c
                 display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
                 pointerEvents:'none'}}>
                 <div style={{fontSize:10,color:'#888',textTransform:'uppercase',letterSpacing:'0.5px'}}>Total gastos</div>
-                <div style={{fontSize:15,fontWeight:700,color:'#1A1A1A',marginTop:3}}>{fmt(totals.expense)}</div>
+                <div style={{fontSize:15,fontWeight:700,color:'#111827',marginTop:3}}>{fmt(totals.expense)}</div>
               </div>
             </div>
           )}
@@ -293,7 +293,7 @@ export function TxRow({ tx, members }) {
           {tx.has_receipt?' · 🧾':''}
         </div>
       </div>
-      <div style={{...s.txAmt,color:tx.type==='income'?'#2D6A4F':'#E07A5F'}}>
+      <div style={{...s.txAmt,color:tx.type==='income'?'#1B4332':'#E07A5F'}}>
         {tx.type==='income'?'+':'−'}{fmt(tx.amount)}
       </div>
     </div>
@@ -302,26 +302,26 @@ export function TxRow({ tx, members }) {
 
 const s = {
   grid:      { display:'flex', flexDirection:'column', gap:16 },
-  card:      { background:'white', borderRadius:16, padding:'0.875rem 1rem', boxShadow:'0 1px 3px rgba(0,0,0,0.06)' },
+  card:      { background:'white', borderRadius:12, padding:'0.875rem 1rem', border:'1px solid #E5E7EB', boxShadow:'0 1px 2px rgba(0,0,0,0.04)' },
   cardLabel: { fontSize:11, fontWeight:600, color:'#aaa', textTransform:'uppercase', letterSpacing:'0.6px' },
   kpiRow:    { display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8 },
-  kpi:       { background:'white', borderRadius:14, padding:'0.75rem 0.75rem',
-               boxShadow:'0 1px 3px rgba(0,0,0,0.06)', minWidth:0 },
+  kpi:       { background:'white', borderRadius:12, padding:'0.75rem 0.75rem',
+               border:'1px solid #E5E7EB', boxShadow:'0 1px 2px rgba(0,0,0,0.04)', minWidth:0 },
   tabs:      { display:'flex', gap:4, background:'#f5f5f5', borderRadius:8, padding:3 },
   tab:       { border:'none', background:'transparent', borderRadius:6, padding:'4px 12px',
                fontSize:12, fontWeight:500, color:'#888', cursor:'pointer' },
-  tabActive: { background:'white', color:'#1A1A1A', boxShadow:'0 1px 3px rgba(0,0,0,0.1)' },
+  tabActive: { background:'white', color:'#111827', boxShadow:'0 1px 3px rgba(0,0,0,0.1)' },
   tooltip:   { background:'white', border:'1px solid #eee', borderRadius:10, padding:'8px 12px',
                display:'flex', gap:8, alignItems:'center', boxShadow:'0 2px 8px rgba(0,0,0,0.08)' },
   txRow:     { display:'flex', alignItems:'center', gap:12, padding:'10px 0',
                borderBottom:'1px solid #f5f5f5' },
   txIcon:    { width:36, height:36, borderRadius:10, display:'flex',
                alignItems:'center', justifyContent:'center', fontSize:18, flexShrink:0 },
-  goalEditBtn:   { fontSize:11, fontWeight:600, color:'#2D6A4F', background:'none', border:'none',
+  goalEditBtn:   { fontSize:11, fontWeight:600, color:'#1B4332', background:'none', border:'none',
                    cursor:'pointer', padding:'2px 0' },
-  goalInput:     { flex:1, padding:'8px 12px', border:'1.5px solid #eee', borderRadius:10,
-                   fontSize:15, outline:'none', background:'#FAFAF8' },
-  goalSaveBtn:   { padding:'8px 16px', background:'#1A1A1A', color:'white', border:'none',
+  goalInput:     { flex:1, padding:'8px 12px', border:'1.5px solid #E5E7EB', borderRadius:10,
+                   fontSize:15, outline:'none', background:'#F9FAFB' },
+  goalSaveBtn:   { padding:'8px 16px', background:'#111827', color:'white', border:'none',
                    borderRadius:10, cursor:'pointer', fontSize:13, fontWeight:600 },
   goalCancelBtn: { padding:'8px 10px', background:'none', border:'1px solid #eee',
                    borderRadius:10, cursor:'pointer', fontSize:13, color:'#888' },
