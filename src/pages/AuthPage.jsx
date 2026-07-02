@@ -116,7 +116,7 @@ const s = {
     background:'radial-gradient(circle, rgba(45,106,79,0.1) 0%, transparent 70%)', pointerEvents:'none' },
   blob2: { position:'fixed', bottom:-100, left:-150, width:400, height:400, borderRadius:'50%',
     background:'radial-gradient(circle, rgba(181,131,141,0.08) 0%, transparent 70%)', pointerEvents:'none' },
-  card: { background:'white', borderRadius:24, padding:'40px 36px', width:'100%', maxWidth:400,
+  card: { background:'white', borderRadius:24, padding:'32px 24px', width:'100%', maxWidth:400,
     boxShadow:'0 8px 40px rgba(0,0,0,0.08)', position:'relative', zIndex:1, animation:'fadeUp 0.4s ease' },
   logo: { fontSize:48, textAlign:'center', marginBottom:8 },
   title: { fontFamily:"'Fraunces', serif", fontSize:32, fontWeight:700, textAlign:'center',

@@ -269,10 +269,10 @@ export default function Dashboard({ totals, byCategory, transactions, budgets, c
 function KPI({ label, value, color, icon, big }) {
   return (
     <div style={{...s.kpi, ...(big ? {background:color} : {})}}>
-      <div style={{fontSize:12,color:big?'rgba(255,255,255,0.8)':'#888',
-        fontWeight:500,textTransform:'uppercase',letterSpacing:'0.5px'}}>{label}</div>
-      <div style={{fontSize:20,fontWeight:700,letterSpacing:'-0.5px',
-        color:big?'white':color}}>{fmt(value)}</div>
+      <div style={{fontSize:10,color:big?'rgba(255,255,255,0.8)':'#888',
+        fontWeight:600,textTransform:'uppercase',letterSpacing:'0.4px',marginBottom:4}}>{label}</div>
+      <div style={{fontSize:15,fontWeight:700,letterSpacing:'-0.3px',
+        color:big?'white':color,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{fmt(value)}</div>
     </div>
   )
 }
@@ -302,11 +302,11 @@ export function TxRow({ tx, members }) {
 
 const s = {
   grid:      { display:'flex', flexDirection:'column', gap:16 },
-  card:      { background:'white', borderRadius:16, padding:'1rem 1.25rem', boxShadow:'0 1px 3px rgba(0,0,0,0.06)' },
+  card:      { background:'white', borderRadius:16, padding:'0.875rem 1rem', boxShadow:'0 1px 3px rgba(0,0,0,0.06)' },
   cardLabel: { fontSize:11, fontWeight:600, color:'#aaa', textTransform:'uppercase', letterSpacing:'0.6px' },
-  kpiRow:    { display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12 },
-  kpi:       { background:'white', borderRadius:16, padding:'0.9rem 1rem',
-               boxShadow:'0 1px 3px rgba(0,0,0,0.06)' },
+  kpiRow:    { display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8 },
+  kpi:       { background:'white', borderRadius:14, padding:'0.75rem 0.75rem',
+               boxShadow:'0 1px 3px rgba(0,0,0,0.06)', minWidth:0 },
   tabs:      { display:'flex', gap:4, background:'#f5f5f5', borderRadius:8, padding:3 },
   tab:       { border:'none', background:'transparent', borderRadius:6, padding:'4px 12px',
                fontSize:12, fontWeight:500, color:'#888', cursor:'pointer' },

@@ -210,27 +210,27 @@ export default function App() {
 
       {/* Header */}
       <header style={s.header}>
-        <div style={s.logo}>
-          <span style={{fontSize:26}}>💰</span>
-          <div>
-            <div style={s.logoTitle}>Finanzas Familiares</div>
-            <div style={s.logoSub}>{profile?.display_name}</div>
+        <div style={s.headerTop}>
+          <div style={s.logo}>
+            <span style={{fontSize:22}}>💰</span>
+            <div>
+              <div style={s.logoTitle}>Finanzas Familiares</div>
+              <div style={s.logoSub}>{profile?.display_name}</div>
+            </div>
+          </div>
+          <div style={s.headerRight}>
+            <button style={s.iconBtn} onClick={() => setShowCats(true)} title="Categorías">🏷️</button>
+            <button style={s.iconBtn} title="Compartir código de familia"
+              onClick={() => { navigator.clipboard.writeText(familyId); notify('✓ Código copiado — compártelo con tu pareja') }}>
+              🔗
+            </button>
+            <button style={s.iconBtn} onClick={signOut} title="Cerrar sesión">↪</button>
           </div>
         </div>
-
         <div style={s.monthNav}>
           <button style={s.navBtn} onClick={prevMonth}>‹</button>
           <span style={s.monthLabel}>{MONTHS[mo-1]} {yr}</span>
           <button style={s.navBtn} onClick={nextMonth}>›</button>
-        </div>
-
-        <div style={s.headerRight}>
-          <button style={s.iconBtn} onClick={() => setShowCats(true)} title="Categorías">🏷️</button>
-          <button style={s.iconBtn} title="Compartir código de familia"
-            onClick={() => { navigator.clipboard.writeText(familyId); notify('✓ Código copiado — compártelo con tu pareja') }}>
-            🔗
-          </button>
-          <button style={s.iconBtn} onClick={signOut} title="Cerrar sesión">↪</button>
         </div>
       </header>
 
@@ -298,15 +298,17 @@ const s = {
   toast: { position:'fixed', top:20, right:20, zIndex:1000, padding:'12px 20px',
     borderRadius:12, color:'white', fontSize:14, fontWeight:500, boxShadow:'0 8px 24px rgba(0,0,0,0.15)' },
   header: { position:'sticky', top:0, zIndex:100, background:'rgba(247,245,240,0.93)',
-    backdropFilter:'blur(12px)', padding:'14px 20px', borderBottom:'1px solid rgba(0,0,0,0.06)',
-    display:'flex', alignItems:'center', gap:12 },
-  logo: { display:'flex', alignItems:'center', gap:10 },
-  logoTitle: { fontFamily:"'Fraunces',serif", fontSize:17, fontWeight:700, letterSpacing:'-0.5px' },
-  logoSub: { fontSize:11, color:'#888' },
-  monthNav: { display:'flex', alignItems:'center', gap:10, margin:'0 auto' },
+    backdropFilter:'blur(12px)', borderBottom:'1px solid rgba(0,0,0,0.06)' },
+  headerTop: { display:'flex', alignItems:'center', justifyContent:'space-between',
+    padding:'10px 16px 6px' },
+  logo: { display:'flex', alignItems:'center', gap:8 },
+  logoTitle: { fontFamily:"'Fraunces',serif", fontSize:14, fontWeight:700, letterSpacing:'-0.3px' },
+  logoSub: { fontSize:10, color:'#888' },
+  monthNav: { display:'flex', alignItems:'center', justifyContent:'center', gap:12,
+    padding:'4px 16px 10px' },
   navBtn: { width:30, height:30, border:'1px solid #ddd', borderRadius:8, background:'white',
     cursor:'pointer', fontSize:16, display:'flex', alignItems:'center', justifyContent:'center' },
-  monthLabel: { fontSize:14, fontWeight:600, minWidth:130, textAlign:'center' },
+  monthLabel: { fontSize:14, fontWeight:600, minWidth:120, textAlign:'center' },
   headerRight: { display:'flex', gap:6 },
   iconBtn: { width:34, height:34, border:'1px solid #eee', borderRadius:10, background:'white',
     cursor:'pointer', fontSize:16, display:'flex', alignItems:'center', justifyContent:'center' },
@@ -315,13 +317,13 @@ const s = {
   userChip: { padding:'5px 14px', borderRadius:20, border:'1px solid #ddd', background:'white',
     cursor:'pointer', fontSize:12, fontWeight:500, color:'#666', whiteSpace:'nowrap' },
   userChipA: { background:'#1A1A1A', color:'white', borderColor:'#1A1A1A' },
-  nav: { display:'flex', alignItems:'center', padding:'0 20px', background:'white',
+  nav: { display:'flex', alignItems:'center', padding:'0 8px', background:'white',
     borderBottom:'1px solid #eee' },
-  navItem: { display:'flex', alignItems:'center', gap:6, padding:'13px 14px', border:'none',
-    background:'none', cursor:'pointer', fontSize:13, color:'#888', fontWeight:500,
+  navItem: { display:'flex', alignItems:'center', gap:4, padding:'12px 10px', border:'none',
+    background:'none', cursor:'pointer', fontSize:12, color:'#888', fontWeight:500,
     borderBottom:'2px solid transparent' },
   navActive: { color:'#1A1A1A', borderBottomColor:'#2D6A4F' },
   addBtn: { marginLeft:'auto', padding:'7px 18px', background:'#1A1A1A', color:'white',
     border:'none', borderRadius:20, cursor:'pointer', fontSize:12, fontWeight:600 },
-  main: { padding:20, maxWidth:960, margin:'0 auto', position:'relative', zIndex:1 },
+  main: { padding:'16px 14px', maxWidth:960, margin:'0 auto', position:'relative', zIndex:1 },
 }
