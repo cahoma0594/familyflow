@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="108" fill="#2D6A4F"/>
+  <path d="M256 100 L420 252 H388 V416 H124 V252 H92 Z" fill="white"/>
+  <rect x="206" y="316" width="100" height="100" rx="8" fill="#2D6A4F"/>
+  <rect x="148" y="284" width="64" height="52" rx="6" fill="#2D6A4F"/>
+  <rect x="300" y="284" width="64" height="52" rx="6" fill="#2D6A4F"/>
+  <text x="256" y="383" text-anchor="middle" fill="white" font-size="62" font-family="Georgia,serif" font-weight="700">€</text>
+</svg>
