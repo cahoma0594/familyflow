@@ -223,6 +223,10 @@ export default function App() {
 
         <div style={s.headerRight}>
           <button style={s.iconBtn} onClick={() => setShowCats(true)} title="Categorías">🏷️</button>
+          <button style={s.iconBtn} title="Compartir código de familia"
+            onClick={() => { navigator.clipboard.writeText(familyId); notify('✓ Código copiado — compártelo con tu pareja') }}>
+            🔗
+          </button>
           <button style={s.iconBtn} onClick={signOut} title="Cerrar sesión">↪</button>
         </div>
       </header>
