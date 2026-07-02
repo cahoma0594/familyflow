@@ -1,18 +1,64 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 
-const EMOJI_OPTIONS = ['🏠','🛒','🚗','🏥','📚','🎭','👕','💡','🍽️','🐾','✈️','💄','🎮','🏋️','🎵','📱','🚿','🌿','🎁','💅','🐶','🐱','🍷','☕','🏊','🎯','🛋️','🔧','📦','💰','💼','💻','💳','🏦','📈']
+const QUICK_EMOJI = ['🏠','🛒','🚗','🏥','📚','🎭','👕','💡','🍽️','🐾','✈️','💄','🎮','🏋️','🎵','📱','🌿','🎁','🐶','🐱','🍷','☕','💰','💼','💻','📈','👶','👧','👦','👨‍👩‍👧','🌱','🎓','🏖️','🎪','🧸','🛺']
+
+function lastEmoji(str) {
+  const s = str.trim()
+  if (!s) return null
+  try {
+    const segs = [...new Intl.Segmenter().segment(s)]
+    return segs[segs.length - 1]?.segment || null
+  } catch {
+    const chars = [...s]
+    return chars.slice(-4).join('') || null
+  }
+}
+
+function EmojiPicker({ value, color, onChange }) {
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <div style={s.emojiPickerRow}>
+        <input
+          style={s.emojiInput}
+          value={value}
+          onChange={e => {
+            const emoji = lastEmoji(e.target.value)
+            if (emoji) onChange(emoji)
+          }}
+          inputMode="text"
+          title="Toca para escribir cualquier emoji"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
+        />
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#333', marginBottom: 2 }}>Toca para elegir cualquier emoji</div>
+          <div style={{ fontSize: 11, color: '#aaa' }}>Abre el teclado emoji de tu teléfono 😊</div>
+        </div>
+      </div>
+      <div style={s.quickLabel}>Sugerencias rápidas</div>
+      <div style={s.emojiGrid}>
+        {QUICK_EMOJI.map(em => (
+          <button key={em}
+            style={{ ...s.emojiBtn, ...(value === em ? { background: color + '33', outline: `2px solid ${color}` } : {}) }}
+            onClick={() => onChange(em)}>{em}</button>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function CategoriesManager({ categories, familyId, userId, onClose, onRefresh }) {
   const [type, setType]         = useState('expense')
   const [adding, setAdding]     = useState(false)
   const [editingId, setEditId]  = useState(null)
-  const [form, setForm]         = useState({ name:'', icon:'📦', color:'#ADB5BD' })
-  const [editForm, setEditForm] = useState({ name:'', icon:'📦', color:'#ADB5BD' })
+  const [form, setForm]         = useState({ name: '', icon: '📦', color: '#ADB5BD' })
+  const [editForm, setEditForm] = useState({ name: '', icon: '📦', color: '#ADB5BD' })
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState(null)
 
-  const cats = categories.filter(c => c.type === type)
+  const cats    = categories.filter(c => c.type === type)
   const customs = cats.filter(c => c.is_custom)
   const globals = cats.filter(c => !c.is_custom)
 
@@ -21,16 +67,11 @@ export default function CategoriesManager({ categories, familyId, userId, onClos
     setLoading(true); setError(null)
     try {
       const { error: e } = await supabase.from('categories').insert({
-        name: form.name.trim(),
-        icon: form.icon,
-        color: form.color,
-        type,
-        family_id: familyId,
-        created_by: userId,
-        is_custom: true,
+        name: form.name.trim(), icon: form.icon, color: form.color,
+        type, family_id: familyId, created_by: userId, is_custom: true,
       })
       if (e) throw e
-      setForm({ name:'', icon:'📦', color:'#ADB5BD' })
+      setForm({ name: '', icon: '📦', color: '#ADB5BD' })
       setAdding(false)
       await onRefresh()
     } catch (err) { setError(err.message) }
@@ -62,54 +103,48 @@ export default function CategoriesManager({ categories, familyId, userId, onClos
 
   return (
     <div style={s.overlay} onClick={onClose}>
-      <div style={s.panel} onClick={e=>e.stopPropagation()}>
+      <div style={s.panel} onClick={e => e.stopPropagation()}>
         <div style={s.header}>
           <h3 style={s.title}>Categorías</h3>
           <button style={s.closeBtn} onClick={onClose}>×</button>
         </div>
 
-        {/* Type tabs */}
         <div style={s.tabs}>
-          {[['expense','Gastos'],['income','Ingresos']].map(([v,l])=>(
-            <button key={v} style={{...s.tab,...(type===v?s.tabA:{})}} onClick={()=>setType(v)}>{l}</button>
+          {[['expense', 'Gastos'], ['income', 'Ingresos']].map(([v, l]) => (
+            <button key={v} style={{ ...s.tab, ...(type === v ? s.tabA : {}) }} onClick={() => setType(v)}>{l}</button>
           ))}
         </div>
 
-        {/* All categories (global + custom) */}
         {[['Predefinidas', globals], ['Personalizadas', customs]].map(([label, list]) =>
           list.length > 0 && (
             <div key={label}>
               <div style={s.sectionLabel}>{label}</div>
-              <div style={{display:'flex', flexDirection:'column', gap:6, marginBottom:16}}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
                 {list.map(c => editingId === c.id ? (
                   <div key={c.id} style={s.editForm}>
                     <div style={s.formRow}>
                       <input style={s.nameInput} value={editForm.name}
-                        onChange={e=>setEditForm(f=>({...f,name:e.target.value}))}
-                        onKeyDown={e=>e.key==='Enter'&&saveEdit()} autoFocus />
+                        onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
+                        onKeyDown={e => e.key === 'Enter' && saveEdit()} autoFocus />
                       <input type="color" style={s.colorPicker} value={editForm.color}
-                        onChange={e=>setEditForm(f=>({...f,color:e.target.value}))} />
+                        onChange={e => setEditForm(f => ({ ...f, color: e.target.value }))} />
                     </div>
-                    <div style={s.emojiGrid}>
-                      {EMOJI_OPTIONS.map(em=>(
-                        <button key={em} style={{...s.emojiBtn,...(editForm.icon===em?{background:editForm.color+'33',outline:`2px solid ${editForm.color}`}:{})}}
-                          onClick={()=>setEditForm(f=>({...f,icon:em}))}>{em}</button>
-                      ))}
-                    </div>
+                    <EmojiPicker value={editForm.icon} color={editForm.color}
+                      onChange={icon => setEditForm(f => ({ ...f, icon }))} />
                     <div style={s.formActions}>
-                      <button style={s.cancelBtn} onClick={()=>setEditId(null)}>Cancelar</button>
+                      <button style={s.cancelBtn} onClick={() => setEditId(null)}>Cancelar</button>
                       <button style={s.saveBtn} onClick={saveEdit} disabled={loading}>
-                        {loading?'Guardando...':'Guardar cambios'}
+                        {loading ? 'Guardando...' : 'Guardar cambios'}
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div key={c.id} style={s.catRow}>
-                    <span style={{...s.dot, background:c.color}}>{c.icon}</span>
-                    <span style={{...s.catName, flex:1}}>{c.name}</span>
-                    <button style={s.editBtn} onClick={()=>startEdit(c)} title="Editar">✏️</button>
+                    <span style={{ ...s.dot, background: c.color }}>{c.icon}</span>
+                    <span style={{ ...s.catName, flex: 1 }}>{c.name}</span>
+                    <button style={s.editBtn} onClick={() => startEdit(c)} title="Editar">✏️</button>
                     {c.is_custom && (
-                      <button style={s.delBtn} onClick={()=>deleteCategory(c.id)} title="Eliminar">×</button>
+                      <button style={s.delBtn} onClick={() => deleteCategory(c.id)} title="Eliminar">×</button>
                     )}
                   </div>
                 ))}
@@ -118,32 +153,27 @@ export default function CategoriesManager({ categories, familyId, userId, onClos
           )
         )}
 
-        {/* Add new */}
         {adding ? (
           <div style={s.addForm}>
             <div style={s.formRow}>
               <input style={s.nameInput} placeholder="Nombre de categoría" value={form.name}
-                onChange={e=>setForm(f=>({...f,name:e.target.value}))} autoFocus
-                onKeyDown={e=>e.key==='Enter'&&saveCategory()} />
+                onChange={e => setForm(f => ({ ...f, name: e.target.value }))} autoFocus
+                onKeyDown={e => e.key === 'Enter' && saveCategory()} />
               <input type="color" style={s.colorPicker} value={form.color}
-                onChange={e=>setForm(f=>({...f,color:e.target.value}))} title="Color" />
+                onChange={e => setForm(f => ({ ...f, color: e.target.value }))} title="Color" />
             </div>
-            <div style={s.emojiGrid}>
-              {EMOJI_OPTIONS.map(em=>(
-                <button key={em} style={{...s.emojiBtn,...(form.icon===em?{background:form.color+'33',outline:`2px solid ${form.color}`}:{})}}
-                  onClick={()=>setForm(f=>({...f,icon:em}))}>{em}</button>
-              ))}
-            </div>
+            <EmojiPicker value={form.icon} color={form.color}
+              onChange={icon => setForm(f => ({ ...f, icon }))} />
             {error && <div style={s.err}>{error}</div>}
             <div style={s.formActions}>
-              <button style={s.cancelBtn} onClick={()=>{setAdding(false);setError(null)}}>Cancelar</button>
+              <button style={s.cancelBtn} onClick={() => { setAdding(false); setError(null) }}>Cancelar</button>
               <button style={s.saveBtn} onClick={saveCategory} disabled={loading}>
                 {loading ? 'Guardando...' : 'Guardar categoría'}
               </button>
             </div>
           </div>
         ) : (
-          <button style={s.addBtn} onClick={()=>setAdding(true)}>
+          <button style={s.addBtn} onClick={() => setAdding(true)}>
             + Nueva categoría personalizada
           </button>
         )}
@@ -153,49 +183,52 @@ export default function CategoriesManager({ categories, familyId, userId, onClos
 }
 
 const s = {
-  overlay: { position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', backdropFilter:'blur(4px)',
-    zIndex:600, display:'flex', alignItems:'flex-end', justifyContent:'center' },
-  panel: { background:'white', borderRadius:'24px 24px 0 0', padding:24, width:'100%',
-    maxWidth:520, maxHeight:'85vh', overflowY:'auto' },
-  header: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:20 },
-  title: { fontFamily:"'Fraunces',serif", fontSize:22, fontWeight:700 },
-  closeBtn: { width:32, height:32, border:'1px solid #eee', borderRadius:8, background:'none',
-    cursor:'pointer', fontSize:20, color:'#666' },
-  tabs: { display:'flex', background:'#F3F4F6', borderRadius:12, padding:4, marginBottom:20, gap:4 },
-  tab: { flex:1, padding:'8px', border:'none', borderRadius:9, background:'transparent',
-    cursor:'pointer', fontSize:13, fontWeight:500, color:'#888' },
-  tabA: { background:'white', color:'#111827', boxShadow:'0 2px 8px rgba(0,0,0,0.08)' },
-  sectionLabel: { fontSize:11, fontWeight:700, color:'#aaa', textTransform:'uppercase',
-    letterSpacing:'1px', marginBottom:10, marginTop:4 },
-  catRow: { display:'flex', alignItems:'center', gap:8, padding:'8px 10px',
-    background:'#F3F4F6', borderRadius:12, fontSize:13, fontWeight:500 },
-  editForm: { border:'1px solid #eee', borderRadius:16, padding:16, marginBottom:4 },
-  editBtn: { background:'none', border:'none', cursor:'pointer', fontSize:14, padding:'2px 4px',
-    color:'#888', flexShrink:0 },
-  catList: { display:'flex', flexWrap:'wrap', gap:8, marginBottom:16 },
-  catChip: { display:'flex', alignItems:'center', gap:6, padding:'6px 12px 6px 6px',
-    background:'#F3F4F6', borderRadius:20, fontSize:13, fontWeight:500 },
-  dot: { width:28, height:28, borderRadius:8, display:'flex', alignItems:'center',
-    justifyContent:'center', fontSize:15 },
-  catName: { color:'#333' },
-  delBtn: { marginLeft:4, background:'none', border:'none', cursor:'pointer', color:'#E07A5F',
-    fontSize:16, fontWeight:700, lineHeight:1, padding:'0 2px' },
-  addBtn: { width:'100%', padding:12, border:'1.5px dashed #ddd', borderRadius:14,
-    background:'none', cursor:'pointer', fontSize:13, color:'#888', fontWeight:500, marginTop:4 },
-  addForm: { border:'1px solid #eee', borderRadius:16, padding:16, marginTop:8 },
-  formRow: { display:'flex', gap:10, marginBottom:12 },
-  nameInput: { flex:1, padding:'10px 12px', border:'1.5px solid #eee', borderRadius:10,
-    fontSize:14, outline:'none' },
-  colorPicker: { width:44, height:44, border:'none', borderRadius:10, cursor:'pointer',
-    padding:2, background:'none' },
-  emojiGrid: { display:'flex', flexWrap:'wrap', gap:6, marginBottom:12 },
-  emojiBtn: { width:36, height:36, border:'1px solid #eee', borderRadius:8, background:'white',
-    cursor:'pointer', fontSize:18, display:'flex', alignItems:'center', justifyContent:'center' },
-  err: { background:'#FEF2F0', color:'#E07A5F', fontSize:12, padding:'8px 12px',
-    borderRadius:8, marginBottom:10 },
-  formActions: { display:'flex', gap:8 },
-  cancelBtn: { flex:1, padding:10, border:'1px solid #eee', borderRadius:10, background:'white',
-    cursor:'pointer', fontSize:13, color:'#666' },
-  saveBtn: { flex:2, padding:10, background:'#111827', color:'white', border:'none',
-    borderRadius:10, cursor:'pointer', fontSize:13, fontWeight:600 },
+  overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)',
+    zIndex: 600, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' },
+  panel: { background: 'white', borderRadius: '20px 20px 0 0', padding: 24, width: '100%',
+    maxWidth: 520, maxHeight: '90vh', overflowY: 'auto' },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  title: { fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700 },
+  closeBtn: { width: 32, height: 32, border: '1px solid #eee', borderRadius: 8, background: 'none',
+    cursor: 'pointer', fontSize: 20, color: '#666' },
+  tabs: { display: 'flex', background: '#F3F4F6', borderRadius: 12, padding: 4, marginBottom: 20, gap: 4 },
+  tab: { flex: 1, padding: '8px', border: 'none', borderRadius: 9, background: 'transparent',
+    cursor: 'pointer', fontSize: 13, fontWeight: 500, color: '#888' },
+  tabA: { background: 'white', color: '#111827', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' },
+  sectionLabel: { fontSize: 11, fontWeight: 700, color: '#aaa', textTransform: 'uppercase',
+    letterSpacing: '1px', marginBottom: 10, marginTop: 4 },
+  catRow: { display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px',
+    background: '#F3F4F6', borderRadius: 12, fontSize: 13, fontWeight: 500 },
+  editForm: { border: '1px solid #E5E7EB', borderRadius: 14, padding: 16, marginBottom: 4 },
+  editBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, padding: '2px 4px',
+    color: '#888', flexShrink: 0 },
+  dot: { width: 28, height: 28, borderRadius: 8, display: 'flex', alignItems: 'center',
+    justifyContent: 'center', fontSize: 15 },
+  catName: { color: '#333' },
+  delBtn: { marginLeft: 4, background: 'none', border: 'none', cursor: 'pointer', color: '#E07A5F',
+    fontSize: 16, fontWeight: 700, lineHeight: 1, padding: '0 2px' },
+  addBtn: { width: '100%', padding: 12, border: '1.5px dashed #D1D5DB', borderRadius: 12,
+    background: 'none', cursor: 'pointer', fontSize: 13, color: '#888', fontWeight: 500, marginTop: 4 },
+  addForm: { border: '1px solid #E5E7EB', borderRadius: 14, padding: 16, marginTop: 8 },
+  formRow: { display: 'flex', gap: 10, marginBottom: 12 },
+  nameInput: { flex: 1, padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10,
+    fontSize: 14, outline: 'none' },
+  colorPicker: { width: 44, height: 44, border: 'none', borderRadius: 10, cursor: 'pointer',
+    padding: 2, background: 'none' },
+  emojiPickerRow: { display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12 },
+  emojiInput: { width: 60, height: 60, fontSize: 32, textAlign: 'center', border: '2px solid #E5E7EB',
+    borderRadius: 12, outline: 'none', cursor: 'text', background: '#F9FAFB', padding: 0,
+    lineHeight: '60px', flexShrink: 0 },
+  quickLabel: { fontSize: 11, color: '#bbb', textTransform: 'uppercase', letterSpacing: '0.5px',
+    marginBottom: 8 },
+  emojiGrid: { display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 },
+  emojiBtn: { width: 36, height: 36, border: '1px solid #eee', borderRadius: 8, background: 'white',
+    cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  err: { background: '#FEF2F0', color: '#E07A5F', fontSize: 12, padding: '8px 12px',
+    borderRadius: 8, marginBottom: 10 },
+  formActions: { display: 'flex', gap: 8 },
+  cancelBtn: { flex: 1, padding: 10, border: '1px solid #eee', borderRadius: 10, background: 'white',
+    cursor: 'pointer', fontSize: 13, color: '#666' },
+  saveBtn: { flex: 2, padding: 10, background: '#111827', color: 'white', border: 'none',
+    borderRadius: 10, cursor: 'pointer', fontSize: 13, fontWeight: 600 },
 }
