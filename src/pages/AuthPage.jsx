@@ -33,6 +33,15 @@ export default function AuthPage() {
     }
   }
 
+  const signInWithGoogle = async () => {
+    setError(null); setLoading(true)
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin }
+    })
+    if (error) { setError(error.message); setLoading(false) }
+  }
+
   return (
     <div style={s.bg}>
       <div style={s.blob1} /><div style={s.blob2} />
@@ -72,6 +81,22 @@ export default function AuthPage() {
             {loading ? <span style={s.spinner}/> : (mode==='login' ? 'Entrar' : 'Crear cuenta')}
           </button>
         </form>
+
+        <div style={s.divider}>
+          <div style={{flex:1,height:1,background:'#eee'}}/>
+          <span style={s.dividerText}>o</span>
+          <div style={{flex:1,height:1,background:'#eee'}}/>
+        </div>
+
+        <button style={s.googleBtn} onClick={signInWithGoogle} type="button" disabled={loading}>
+          <svg width="18" height="18" viewBox="0 0 48 48">
+            <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.7 2.5 30.2 0 24 0 14.7 0 6.7 5.4 2.7 13.3l7.8 6C12.4 13 17.8 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 6.9-9.9 6.9-17z"/>
+            <path fill="#FBBC05" d="M10.5 28.7A14.8 14.8 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.8-6A23.9 23.9 0 0 0 0 24c0 3.9.9 7.5 2.6 10.7l7.9-6z"/>
+            <path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.6 2.2-7.7 2.2-6.2 0-11.5-4.2-13.4-9.9l-7.9 6C6.7 42.6 14.7 48 24 48z"/>
+          </svg>
+          Continuar con Google
+        </button>
 
         <p style={s.hint}>
           {mode==='login' ? '¿Primera vez? ' : '¿Ya tienes cuenta? '}
@@ -115,6 +140,12 @@ const s = {
     alignItems:'center', justifyContent:'center', gap:8 },
   spinner: { width:16, height:16, border:'2px solid rgba(255,255,255,0.3)',
     borderTopColor:'white', borderRadius:'50%', animation:'spin 0.7s linear infinite' },
+  divider: { display:'flex', alignItems:'center', gap:12, margin:'20px 0 16px' },
+  dividerText: { fontSize:12, color:'#ccc', background:'white', padding:'0 8px' },
+  googleBtn: { width:'100%', padding:'13px', border:'1.5px solid #eee', borderRadius:14,
+    background:'white', cursor:'pointer', fontSize:14, fontWeight:500, color:'#333',
+    display:'flex', alignItems:'center', justifyContent:'center', gap:10,
+    transition:'border-color 0.2s, box-shadow 0.2s' },
   hint: { textAlign:'center', fontSize:13, color:'#888', marginTop:20 },
   link: { background:'none', border:'none', color:'#2D6A4F', cursor:'pointer',
     fontWeight:600, fontSize:13 },
