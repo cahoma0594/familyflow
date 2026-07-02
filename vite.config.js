@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'pwa-icon.svg'],
       manifest: {
-        name: 'FamilyFlow — Presupuesto familiar',
-        short_name: 'FamilyFlow',
+        name: 'Finanzas Familiares',
+        short_name: 'Finanzas',
         description: 'Controla el presupuesto familiar con facilidad',
         theme_color: '#2D6A4F',
         background_color: '#F7F5F0',

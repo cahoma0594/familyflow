@@ -25,7 +25,6 @@ export default function App() {
 
   const [view,       setView]       = useState('dashboard')
   const [activeMonth, setActiveMonth] = useState(monthKey(new Date()))
-  const [filterUser, setFilterUser] = useState(null)
   const [showForm,   setShowForm]   = useState(false)
   const [editTx,     setEditTx]     = useState(null)
   const [showCats,   setShowCats]   = useState(false)
@@ -182,16 +181,14 @@ export default function App() {
   const prevMonth = () => { const d = new Date(yr, mo-2); setActiveMonth(monthKey(d)) }
   const nextMonth = () => { const d = new Date(yr, mo);   setActiveMonth(monthKey(d)) }
 
-  // ── Filtered transactions ─────────────────────────────────────────────────
-  const filteredTx = filterUser ? transactions.filter(t => t.user_id === filterUser) : transactions
-
-  const totals = filteredTx.reduce((acc, t) => {
+  // ── Totals ────────────────────────────────────────────────────────────────
+  const totals = transactions.reduce((acc, t) => {
     t.type === 'income' ? acc.income += +t.amount : acc.expense += +t.amount
     return acc
   }, { income: 0, expense: 0, balance: 0 })
   totals.balance = totals.income - totals.expense
 
-  const byCategory = filteredTx.reduce((acc, t) => {
+  const byCategory = transactions.reduce((acc, t) => {
     acc[t.category_id] = (acc[t.category_id] || 0) + +t.amount
     return acc
   }, {})
@@ -214,9 +211,9 @@ export default function App() {
       {/* Header */}
       <header style={s.header}>
         <div style={s.logo}>
-          <span style={{fontSize:26}}>🌿</span>
+          <span style={{fontSize:26}}>💰</span>
           <div>
-            <div style={s.logoTitle}>FamilyFlow</div>
+            <div style={s.logoTitle}>Finanzas Familiares</div>
             <div style={s.logoSub}>{profile?.display_name}</div>
           </div>
         </div>
@@ -237,22 +234,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* User filter */}
-      {members.length > 1 && (
-        <div style={s.userBar}>
-          <button style={{...s.userChip,...(!filterUser?s.userChipA:{})}} onClick={()=>setFilterUser(null)}>
-            👨‍👩‍👧 Familia
-          </button>
-          {members.map(m => (
-            <button key={m.user_id}
-              style={{...s.userChip,...(filterUser===m.user_id?{...s.userChipA,borderColor:m.profiles?.avatar_color,color:m.profiles?.avatar_color}:{})}}
-              onClick={()=>setFilterUser(filterUser===m.user_id?null:m.user_id)}>
-              👤 {m.profiles?.display_name}
-            </button>
-          ))}
-        </div>
-      )}
-
       {/* Nav */}
       <nav style={s.nav}>
         {[['dashboard','◉','Panel'],['transactions','⇄','Movimientos'],['budget','◎','Presupuesto']].map(([id,ic,lb])=>(
@@ -266,12 +247,12 @@ export default function App() {
       {/* Main */}
       <main style={s.main}>
         {view === 'dashboard' && (
-          <Dashboard totals={totals} byCategory={byCategory} transactions={filteredTx}
+          <Dashboard totals={totals} byCategory={byCategory} transactions={transactions}
             budgets={budgets} categories={categories} activeMonth={activeMonth}
-            familyId={familyId} savingsGoal={savingsGoal} onRefresh={loadData} />
+            familyId={familyId} savingsGoal={savingsGoal} onRefresh={loadData} members={members} />
         )}
         {view === 'transactions' && (
-          <Transactions transactions={filteredTx} categories={categories}
+          <Transactions transactions={transactions} categories={categories}
             onEdit={tx=>{ setEditTx(tx); setShowForm(true) }} onDelete={deleteTx} members={members} />
         )}
         {view === 'budget' && (

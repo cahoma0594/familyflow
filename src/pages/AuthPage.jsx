@@ -46,8 +46,8 @@ export default function AuthPage() {
     <div style={s.bg}>
       <div style={s.blob1} /><div style={s.blob2} />
       <div style={s.card}>
-        <div style={s.logo}>🌿</div>
-        <h1 style={s.title}>FamilyFlow</h1>
+        <div style={s.logo}>💰</div>
+        <h1 style={s.title}>Finanzas Familiares</h1>
         <p style={s.sub}>Presupuesto familiar compartido</p>
 
         <div style={s.tabs}>

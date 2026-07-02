@@ -58,7 +58,7 @@ function PieCenterLabel({ viewBox, total }) {
   )
 }
 
-export default function Dashboard({ totals, byCategory, transactions, budgets, categories, activeMonth, familyId, savingsGoal, onRefresh }) {
+export default function Dashboard({ totals, byCategory, transactions, budgets, categories, activeMonth, familyId, savingsGoal, onRefresh, members }) {
   const [chartTab, setChartTab]     = useState('bar')
   const [editingGoal, setEditGoal]  = useState(false)
   const [goalInput, setGoalInput]   = useState('')
@@ -98,8 +98,7 @@ export default function Dashboard({ totals, byCategory, transactions, budgets, c
     pct: Math.round((c.amount / totalExpense) * 100)
   }))
 
-  const saveRate = totals.income > 0 ? Math.round((totals.balance / totals.income) * 100) : 0
-  const recent   = [...transactions].slice(0, 5)
+  const recent = [...transactions].slice(0, 5)
 
   return (
     <div style={s.grid}>
@@ -213,34 +212,33 @@ export default function Dashboard({ totals, byCategory, transactions, budgets, c
           )}
 
           {chartTab === 'pie' && (
-            <ResponsiveContainer width="100%" height={240}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={65}
-                  outerRadius={95}
-                  paddingAngle={2}
-                  dataKey="amount"
-                >
-                  {pieData.map((c, i) => (
-                    <Cell key={c.id} fill={c.color || CHART_COLORS[i % CHART_COLORS.length]} />
-                  ))}
-                  <PieCenterLabel total={totals.expense} />
-                </Pie>
-                <Tooltip content={<PieTooltip />} />
-                <Legend
-                  formatter={(value, entry) => (
-                    <span style={{fontSize:12,color:'#555'}}>
-                      {entry.payload.icon} {entry.payload.name} · {entry.payload.pct}%
-                    </span>
-                  )}
-                  iconSize={10}
-                  iconType="circle"
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            <div style={{position:'relative'}}>
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart>
+                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={65} outerRadius={95}
+                    paddingAngle={2} dataKey="amount">
+                    {pieData.map((c, i) => (
+                      <Cell key={c.id} fill={c.color || CHART_COLORS[i % CHART_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<PieTooltip />} />
+                  <Legend
+                    formatter={(value, entry) => (
+                      <span style={{fontSize:12,color:'#555'}}>
+                        {entry.payload.icon} {entry.payload.name} · {entry.payload.pct}%
+                      </span>
+                    )}
+                    iconSize={10} iconType="circle"
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div style={{position:'absolute',top:0,left:0,right:0,height:180,
+                display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
+                pointerEvents:'none'}}>
+                <div style={{fontSize:10,color:'#888',textTransform:'uppercase',letterSpacing:'0.5px'}}>Total gastos</div>
+                <div style={{fontSize:15,fontWeight:700,color:'#1A1A1A',marginTop:3}}>{fmt(totals.expense)}</div>
+              </div>
+            </div>
           )}
         </div>
       )}
@@ -250,7 +248,7 @@ export default function Dashboard({ totals, byCategory, transactions, budgets, c
         <div style={s.card}>
           <div style={s.cardLabel}>Últimos movimientos</div>
           <div style={{marginTop:8}}>
-            {recent.map(tx => <TxRow key={tx.id} tx={tx} />)}
+            {recent.map(tx => <TxRow key={tx.id} tx={tx} members={members} />)}
           </div>
         </div>
       )}
@@ -279,8 +277,9 @@ function KPI({ label, value, color, icon, big }) {
   )
 }
 
-export function TxRow({ tx, compact }) {
+export function TxRow({ tx, members }) {
   const cat = tx.categories
+  const member = members?.find(m => m.user_id === tx.user_id)
   return (
     <div style={s.txRow}>
       <div style={{...s.txIcon,background:(cat?.color||'#aaa')+'22',color:cat?.color||'#aaa'}}>
@@ -288,7 +287,11 @@ export function TxRow({ tx, compact }) {
       </div>
       <div style={{flex:1,minWidth:0}}>
         <div style={s.txDesc}>{tx.description || cat?.name || '—'}</div>
-        <div style={s.txMeta}>{tx.date} · {cat?.name}{tx.has_receipt?' · 🧾':''}</div>
+        <div style={s.txMeta}>
+          {tx.date} · {cat?.name}
+          {member && ` · ${member.profiles?.display_name}`}
+          {tx.has_receipt?' · 🧾':''}
+        </div>
       </div>
       <div style={{...s.txAmt,color:tx.type==='income'?'#2D6A4F':'#E07A5F'}}>
         {tx.type==='income'?'+':'−'}{fmt(tx.amount)}
