@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { supabase } from '../lib/supabase'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
   PieChart, Pie, Legend
@@ -57,8 +58,25 @@ function PieCenterLabel({ viewBox, total }) {
   )
 }
 
-export default function Dashboard({ totals, byCategory, transactions, budgets, categories, activeMonth, familyId }) {
-  const [chartTab, setChartTab] = useState('bar')
+export default function Dashboard({ totals, byCategory, transactions, budgets, categories, activeMonth, familyId, savingsGoal, onRefresh }) {
+  const [chartTab, setChartTab]     = useState('bar')
+  const [editingGoal, setEditGoal]  = useState(false)
+  const [goalInput, setGoalInput]   = useState('')
+  const [savingGoal, setSavingGoal] = useState(false)
+
+  const saveGoal = async () => {
+    const amount = parseFloat(goalInput)
+    if (!amount || amount <= 0) return
+    setSavingGoal(true)
+    if (savingsGoal?.id) {
+      await supabase.from('savings_goals').update({ target_amount: amount }).eq('id', savingsGoal.id)
+    } else {
+      await supabase.from('savings_goals').insert({ family_id: familyId, month: activeMonth, target_amount: amount })
+    }
+    setSavingGoal(false)
+    setEditGoal(false)
+    onRefresh()
+  }
 
   const expenseCats = categories.filter(c => c.type === 'expense')
 
@@ -95,23 +113,61 @@ export default function Dashboard({ totals, byCategory, transactions, budgets, c
           big icon={totals.balance >= 0 ? '✓' : '!'} />
       </div>
 
-      {/* ── Savings rate ── */}
-      {totals.income > 0 && (
-        <div style={s.card}>
-          <div style={s.cardLabel}>Tasa de ahorro</div>
-          <div style={{display:'flex',alignItems:'center',gap:12,marginTop:8}}>
-            <div style={{flex:1,height:8,background:'#eee',borderRadius:99}}>
-              <div style={{
-                height:8, borderRadius:99,
-                width: Math.max(0, Math.min(100, saveRate)) + '%',
-                background: saveRate >= 20 ? '#2D6A4F' : saveRate >= 10 ? '#F2CC8F' : '#E07A5F',
-                transition: 'width 0.4s ease'
-              }}/>
-            </div>
-            <span style={{fontSize:15,fontWeight:600,minWidth:40}}>{saveRate}%</span>
-          </div>
+      {/* ── Savings goal ── */}
+      <div style={s.card}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div style={s.cardLabel}>Ahorro del mes</div>
+          <button style={s.goalEditBtn} onClick={()=>{ setGoalInput(savingsGoal?.target_amount||''); setEditGoal(true) }}>
+            {savingsGoal ? '✏️ Editar meta' : '＋ Definir meta'}
+          </button>
         </div>
-      )}
+
+        {editingGoal ? (
+          <div style={{display:'flex',gap:8,marginTop:12,alignItems:'center'}}>
+            <input style={s.goalInput} type="number" inputMode="decimal" placeholder="Ej: 400"
+              value={goalInput} onChange={e=>setGoalInput(e.target.value)}
+              autoFocus onKeyDown={e=>e.key==='Enter'&&saveGoal()} />
+            <span style={{fontSize:13,color:'#888'}}>€</span>
+            <button style={s.goalSaveBtn} onClick={saveGoal} disabled={savingGoal}>
+              {savingGoal ? '...' : 'Guardar'}
+            </button>
+            <button style={s.goalCancelBtn} onClick={()=>setEditGoal(false)}>✕</button>
+          </div>
+        ) : (
+          <div style={{marginTop:10}}>
+            {savingsGoal ? (
+              <>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+                  <span style={{fontSize:13,color:'#555'}}>
+                    {fmt(Math.max(0, totals.balance))} ahorrado
+                  </span>
+                  <span style={{fontSize:13,fontWeight:600,color:'#2D6A4F'}}>
+                    meta {fmt(savingsGoal.target_amount)}
+                  </span>
+                </div>
+                <div style={{height:10,background:'#eee',borderRadius:99,overflow:'hidden'}}>
+                  <div style={{
+                    height:10, borderRadius:99, transition:'width 0.4s ease',
+                    width: Math.min(100, Math.max(0, (totals.balance / savingsGoal.target_amount) * 100)) + '%',
+                    background: totals.balance >= savingsGoal.target_amount ? '#2D6A4F'
+                      : totals.balance >= savingsGoal.target_amount * 0.5 ? '#F2CC8F' : '#E07A5F'
+                  }}/>
+                </div>
+                <div style={{fontSize:12,color:'#aaa',marginTop:6,textAlign:'right'}}>
+                  {totals.balance >= savingsGoal.target_amount
+                    ? '🎉 ¡Meta alcanzada!'
+                    : `Faltan ${fmt(savingsGoal.target_amount - Math.max(0, totals.balance))}`}
+                </div>
+              </>
+            ) : (
+              <div style={{fontSize:13,color:'#aaa',marginTop:4}}>
+                Balance actual: <strong style={{color: totals.balance>=0?'#2D6A4F':'#E07A5F'}}>{fmt(totals.balance)}</strong>
+                <span style={{display:'block',marginTop:4,fontSize:12}}>Define una meta para ver tu progreso</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* ── Gráficos ── */}
       {chartData.length > 0 && (
@@ -258,6 +314,14 @@ const s = {
                borderBottom:'1px solid #f5f5f5' },
   txIcon:    { width:36, height:36, borderRadius:10, display:'flex',
                alignItems:'center', justifyContent:'center', fontSize:18, flexShrink:0 },
+  goalEditBtn:   { fontSize:11, fontWeight:600, color:'#2D6A4F', background:'none', border:'none',
+                   cursor:'pointer', padding:'2px 0' },
+  goalInput:     { flex:1, padding:'8px 12px', border:'1.5px solid #eee', borderRadius:10,
+                   fontSize:15, outline:'none', background:'#FAFAF8' },
+  goalSaveBtn:   { padding:'8px 16px', background:'#1A1A1A', color:'white', border:'none',
+                   borderRadius:10, cursor:'pointer', fontSize:13, fontWeight:600 },
+  goalCancelBtn: { padding:'8px 10px', background:'none', border:'1px solid #eee',
+                   borderRadius:10, cursor:'pointer', fontSize:13, color:'#888' },
   txDesc:    { fontSize:14, fontWeight:500, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' },
   txMeta:    { fontSize:12, color:'#aaa', marginTop:2 },
   txAmt:     { fontSize:14, fontWeight:600, flexShrink:0 },

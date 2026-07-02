@@ -20,6 +20,7 @@ export default function App() {
   const [categories, setCategories] = useState([])
   const [transactions, setTransactions] = useState([])
   const [budgets,    setBudgets]    = useState([])
+  const [savingsGoal, setSavingsGoal] = useState(null)
   const [loading,    setLoading]    = useState(true)
 
   const [view,       setView]       = useState('dashboard')
@@ -59,7 +60,7 @@ export default function App() {
     if (!familyId) return
     setLoading(true)
     try {
-      const [{ data: cats }, { data: mems }, { data: txs }, { data: bdgs }] = await Promise.all([
+      const [{ data: cats }, { data: mems }, { data: txs }, { data: bdgs }, { data: goal }] = await Promise.all([
         supabase.from('categories').select('*')
           .or(`family_id.is.null,family_id.eq.${familyId}`)
           .order('sort_order'),
@@ -73,11 +74,16 @@ export default function App() {
         supabase.from('budgets').select('*')
           .eq('family_id', familyId)
           .eq('month', activeMonth),
+        supabase.from('savings_goals').select('*')
+          .eq('family_id', familyId)
+          .eq('month', activeMonth)
+          .maybeSingle(),
       ])
       setCategories(cats || [])
       setMembers(mems || [])
       setTransactions(txs || [])
       setBudgets(bdgs || [])
+      setSavingsGoal(goal || null)
     } catch (err) {
       console.error('Error cargando datos:', err)
       notify('Error de conexión. Comprueba tu red e inténtalo de nuevo.', 'error')
@@ -261,7 +267,8 @@ export default function App() {
       <main style={s.main}>
         {view === 'dashboard' && (
           <Dashboard totals={totals} byCategory={byCategory} transactions={filteredTx}
-            budgets={budgets} categories={categories} activeMonth={activeMonth} familyId={familyId} />
+            budgets={budgets} categories={categories} activeMonth={activeMonth}
+            familyId={familyId} savingsGoal={savingsGoal} onRefresh={loadData} />
         )}
         {view === 'transactions' && (
           <Transactions transactions={filteredTx} categories={categories}
